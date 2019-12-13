@@ -31,6 +31,10 @@ export default {
   methods: {
     check() {
       this.feedback = this.first + this.second == this.answer ? 'Correct' : 'Opps'
+      if (this.feedback == 'Correct') {
+        this.first += 1 
+        this.second += 1 
+      }
     }
   },
 }
