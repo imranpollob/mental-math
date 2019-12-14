@@ -11,14 +11,19 @@
 
     Operations:
 
-    <input type="checkbox" id="addition" value="addition" v-model="operation" />
+    <input
+      type="checkbox"
+      id="addition"
+      value="addition"
+      v-model="operation.addition"
+    />
     <label for="addition">Addition</label>
 
     <input
       type="checkbox"
       id="subtraction"
       value="subtraction"
-      v-model="operation"
+      v-model="operation.subtraction"
     />
     <label for="subtraction">Subtraction</label>
 
@@ -26,14 +31,20 @@
       type="checkbox"
       id="multiplication"
       value="multiplication"
-      v-model="operation"
+      v-model="operation.multiplication"
     />
     <label for="multiplication">Multiplication</label>
 
-    <input type="checkbox" id="division" value="division" v-model="operation" />
+    <input
+      type="checkbox"
+      id="division"
+      value="division"
+      v-model="operation.division"
+    />
     <label for="division">Division</label>
     <br />
-    <span>Checked names: {{ operation }}</span>
+    <br />
+    <br />
 
     <form @submit.prevent="check">
       <span class="first-arg">{{ first }}</span>
@@ -55,57 +66,90 @@ export default {
       second: 2,
       operator: "+",
       answer: null,
+      result: false,
       feedback: "",
-      firstLimit: 0,
-      secondLimit: 0,
-      operation: ["addition"]
+      firstLimit: 12,
+      secondLimit: 10,
+      operation: {
+        addition: true,
+        subtraction: true,
+        multiplication: true,
+        division: true
+      },
+      symbol: {
+        addition: "+",
+        subtraction: "-",
+        multiplication: "x",
+        division: "÷"
+      },
+      log: [
+        {
+          first: 4,
+          second: 5,
+          operator: "+",
+          answer: 9,
+          result: true,
+          time: 3
+        }
+      ]
     };
   },
   methods: {
     check() {
+      this.result = false;
+
       switch (this.operator) {
-        case "addition":
-          this.feedback =
-            this.first + this.second == this.answer ? "Correct" : "Opps";
+        case "+":
+          this.result = this.first + this.second == this.answer;
           break;
 
-        case "subtraction":
-          this.feedback =
-            this.first - this.second == this.answer ? "Correct" : "Opps";
+        case "-":
+          this.result = this.first - this.second == this.answer;
           break;
 
-        case "multiplication":
-          this.feedback =
-            this.first * this.second == this.answer ? "Correct" : "Opps";
+        case "X":
+          this.result = this.first * this.second == this.answer;
           break;
 
-        case "divison":
-          this.feedback =
-            this.first / this.second == this.answer ? "Correct" : "Opps";
+        case "÷":
+          this.result = this.first / this.second == this.answer;
           break;
 
         default:
-          this.feedback = "No operator is selected";
+          this.result = "No operator is selected";
           break;
       }
 
-      if (this.feedback == "Correct") {
-        // setTimeout(() => {
+      if (this.result) {
         this.first += 1;
         this.second += 1;
         this.answer = null;
-        // }, 1000);
+        this.feedback = "Correct";
+
+        this.saveToLog();
+        this.newQuestion();
+      } else {
+        this.saveToLog();
+        this.feedback = "Opps";
       }
     },
     typing() {
       this.feedback = "";
     },
     newQuestion() {
-      this.first = Math.floor(Math.random() * Math.floor(firstLimit));
-      this.second = Math.floor(Math.random() * Math.floor(secondLimit));
-      this.operator = this.operation[
-        Math.floor(Math.random() * Math.floor(this.operation.length))
-      ];
+      this.first = Math.floor(Math.random() * Math.floor(this.firstLimit));
+      this.second = Math.floor(Math.random() * Math.floor(this.secondLimit));
+      this.operator = "+";
+    },
+    saveToLog() {
+      this.log.push({
+        first: this.first,
+        second: this.second,
+        operator: this.operator,
+        answer: this.answer,
+        result: this.result,
+        time: 3
+      });
     }
   }
 };
@@ -118,9 +162,5 @@ export default {
 .answer,
 .feedback {
   font-size: 24px;
-}
-
-.feedback {
-  /* transition: opacity 1s linear;; */
 }
 </style>
