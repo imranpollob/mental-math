@@ -2,11 +2,11 @@
   <div class="home">
     <div>
       Limit of first argument
-      <input type="text" />
+      <input type="text" v-model="firstLimit"/>
     </div>
     <div>
       Limit of second argument
-      <input type="text" />
+      <input type="text" v-model="secondLimit"/>
     </div>
 
     Operations:
@@ -74,7 +74,7 @@ export default {
         addition: true,
         subtraction: true,
         multiplication: true,
-        division: true
+        division: false
       },
       symbol: {
         addition: "+",
@@ -139,7 +139,9 @@ export default {
     newQuestion() {
       this.first = Math.floor(Math.random() * Math.floor(this.firstLimit));
       this.second = Math.floor(Math.random() * Math.floor(this.secondLimit));
-      this.operator = "+";
+      this.operator = this.operatorMap[
+        Math.floor(Math.random() * Math.floor(this.operatorMap.length))
+      ];
     },
     saveToLog() {
       this.log.push({
@@ -150,6 +152,19 @@ export default {
         result: this.result,
         time: 3
       });
+    }
+  },
+  computed: {
+    operatorMap() {
+      let map = [];
+
+      Object.keys(this.operation)
+        .filter(key => this.operation[key])
+        .map(key => {
+          map.push(this.symbol[key]);
+        });
+
+      return map;
     }
   }
 };
