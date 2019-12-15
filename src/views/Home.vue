@@ -1,67 +1,85 @@
 <template>
   <div class="home">
-    <div>
-      <input
-        type="checkbox"
-        id="addition"
-        value="addition"
-        v-model="operation.addition.active"
-      />
-      <label for="addition">Addition</label>
-      <input type="text" v-model="operation.addition.firstLimit" />
-      <input type="text" v-model="operation.addition.secondLimit" />
+    <div v-if="!quizRunning">
+      <div>
+        <input
+          type="checkbox"
+          id="addition"
+          value="addition"
+          v-model="operation.addition.active"
+        />
+        <label for="addition">Addition</label>
+        <input type="text" v-model="operation.addition.firstLimit" />
+        <input type="text" v-model="operation.addition.secondLimit" />
+      </div>
+
+      <div>
+        <input
+          type="checkbox"
+          id="subtraction"
+          value="subtraction"
+          v-model="operation.subtraction.active"
+        />
+        <label for="subtraction">Subtraction</label>
+        <input type="text" v-model="operation.subtraction.firstLimit" />
+        <input type="text" v-model="operation.subtraction.secondLimit" />
+      </div>
+
+      <div>
+        <input
+          type="checkbox"
+          id="multiplication"
+          value="multiplication"
+          v-model="operation.multiplication.active"
+        />
+        <label for="multiplication">Multiplication</label>
+        <input type="text" v-model="operation.multiplication.firstLimit" />
+        <input type="text" v-model="operation.multiplication.secondLimit" />
+      </div>
+
+      <div>
+        <input
+          type="checkbox"
+          id="division"
+          value="division"
+          v-model="operation.division.active"
+        />
+        <label for="division">Division</label>
+        <input type="text" v-model="operation.division.firstLimit" />
+        <input type="text" v-model="operation.division.secondLimit" />
+      </div>
+
+      <div>
+        Total Time
+        <input type="text" v-model="quizTime" /> minute
+      </div>
+
+      <dir>
+        <button @click="startQuiz">Start</button>
+      </dir>
     </div>
 
-    <div>
-      <input
-        type="checkbox"
-        id="subtraction"
-        value="subtraction"
-        v-model="operation.subtraction.active"
-      />
-      <label for="subtraction">Subtraction</label>
-      <input type="text" v-model="operation.subtraction.firstLimit" />
-      <input type="text" v-model="operation.subtraction.secondLimit" />
+    <div v-else>
+      <form @submit.prevent="check">
+        <span class="first-arg">{{ first }}</span>
+        <span class="operator">{{ operator }}</span>
+        <span class="second-arg">{{ second }}</span>
+        =
+        <input
+          type="number"
+          class="answer"
+          v-model="answer"
+          @keydown="typing"
+        />
+        <div class="feedback">{{ feedback }}</div>
+      </form>
+
+      Time: {{ individualTime }}s
+
+      <dir>
+        <button @click="stopQuiz">Stop</button>
+      </dir>
     </div>
-
-    <div>
-      <input
-        type="checkbox"
-        id="multiplication"
-        value="multiplication"
-        v-model="operation.multiplication.active"
-      />
-      <label for="multiplication">Multiplication</label>
-      <input type="text" v-model="operation.multiplication.firstLimit" />
-      <input type="text" v-model="operation.multiplication.secondLimit" />
-    </div>
-
-    <div>
-      <input
-        type="checkbox"
-        id="division"
-        value="division"
-        v-model="operation.division.active"
-      />
-      <label for="division">Division</label>
-      <input type="text" v-model="operation.division.firstLimit" />
-      <input type="text" v-model="operation.division.secondLimit" />
-    </div>
-
-    <br />
-    <br />
-    <br />
-
-    <form @submit.prevent="check">
-      <span class="first-arg">{{ first }}</span>
-      <span class="operator">{{ operator }}</span>
-      <span class="second-arg">{{ second }}</span>
-      =
-      <input type="number" class="answer" v-model="answer" @keydown="typing" />
-      <div class="feedback">{{ feedback }}</div>
-    </form>
-
-    Time: {{ individualTime }}
   </div>
 </template>
 
@@ -78,9 +96,10 @@ export default {
       answer: null,
       result: false,
       feedback: "",
-      quizTime: 0,
+      quizTime: 2,
       individualTime: 0,
       timer: null,
+      quizRunning: false,
       operation: {
         addition: {
           symbol: "+",
@@ -112,6 +131,14 @@ export default {
     };
   },
   methods: {
+    startQuiz() {
+      this.quizRunning = true;
+      this.newQuestion();
+    },
+    stopQuiz() {
+      this.quizRunning = false;
+      this.stopTimer();
+    },
     check() {
       this.result = false;
 
@@ -215,9 +242,6 @@ export default {
         key => this.operation[key].active
       );
     }
-  },
-  created() {
-    this.newQuestion();
   }
 };
 </script>
