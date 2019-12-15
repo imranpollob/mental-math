@@ -1,47 +1,53 @@
 <template>
   <div class="home">
     <div>
-      Limit of first argument
-      <input type="text" v-model="firstLimit" />
+      <input
+        type="checkbox"
+        id="addition"
+        value="addition"
+        v-model="operation.addition.active"
+      />
+      <label for="addition">Addition</label>
+      <input type="text" v-model="operation.addition.firstLimit" />
+      <input type="text" v-model="operation.addition.secondLimit" />
     </div>
+
     <div>
-      Limit of second argument
-      <input type="text" v-model="secondLimit" />
+      <input
+        type="checkbox"
+        id="subtraction"
+        value="subtraction"
+        v-model="operation.subtraction.active"
+      />
+      <label for="subtraction">Subtraction</label>
+      <input type="text" v-model="operation.subtraction.firstLimit" />
+      <input type="text" v-model="operation.subtraction.secondLimit" />
     </div>
 
-    Operations:
+    <div>
+      <input
+        type="checkbox"
+        id="multiplication"
+        value="multiplication"
+        v-model="operation.multiplication.active"
+      />
+      <label for="multiplication">Multiplication</label>
+      <input type="text" v-model="operation.multiplication.firstLimit" />
+      <input type="text" v-model="operation.multiplication.secondLimit" />
+    </div>
 
-    <input
-      type="checkbox"
-      id="addition"
-      value="addition"
-      v-model="operation.addition"
-    />
-    <label for="addition">Addition</label>
+    <div>
+      <input
+        type="checkbox"
+        id="division"
+        value="division"
+        v-model="operation.division.active"
+      />
+      <label for="division">Division</label>
+      <input type="text" v-model="operation.division.firstLimit" />
+      <input type="text" v-model="operation.division.secondLimit" />
+    </div>
 
-    <input
-      type="checkbox"
-      id="subtraction"
-      value="subtraction"
-      v-model="operation.subtraction"
-    />
-    <label for="subtraction">Subtraction</label>
-
-    <input
-      type="checkbox"
-      id="multiplication"
-      value="multiplication"
-      v-model="operation.multiplication"
-    />
-    <label for="multiplication">Multiplication</label>
-
-    <input
-      type="checkbox"
-      id="division"
-      value="division"
-      v-model="operation.division"
-    />
-    <label for="division">Division</label>
     <br />
     <br />
     <br />
@@ -70,19 +76,31 @@ export default {
       answer: null,
       result: false,
       feedback: "",
-      firstLimit: 12,
-      secondLimit: 10,
       operation: {
-        addition: true,
-        subtraction: true,
-        multiplication: true,
-        division: false
-      },
-      symbol: {
-        addition: "+",
-        subtraction: "-",
-        multiplication: "x",
-        division: "÷"
+        addition: {
+          symbol: "+",
+          active: true,
+          firstLimit: 100,
+          secondLimit: 100
+        },
+        subtraction: {
+          symbol: "-",
+          active: true,
+          firstLimit: 100,
+          secondLimit: 100
+        },
+        multiplication: {
+          symbol: "x",
+          active: true,
+          firstLimit: 100,
+          secondLimit: 100
+        },
+        division: {
+          symbol: "÷",
+          active: true,
+          firstLimit: 100,
+          secondLimit: 100
+        }
       },
       log: [],
       questions: []
@@ -129,10 +147,18 @@ export default {
       this.feedback = "";
     },
     generateQuestion() {
+      let possibleOperator = this.operatorMap[r(this.operatorMap.length - 1)];
+
       return {
-        possibleFirst: r(1, parseInt(this.firstLimit)),
-        possibleSecond: r(1, parseInt(this.secondLimit)),
-        possibleOperator: this.operatorMap[r(this.operatorMap.length - 1)]
+        possibleFirst: r(
+          1,
+          parseInt(this.operation[possibleOperator].firstLimit)
+        ),
+        possibleSecond: r(
+          1,
+          parseInt(this.operation[possibleOperator].secondLimit)
+        ),
+        possibleOperator: this.operation[possibleOperator].symbol
       };
     },
     newQuestion() {
@@ -171,15 +197,9 @@ export default {
   },
   computed: {
     operatorMap() {
-      let map = [];
-
-      Object.keys(this.operation)
-        .filter(key => this.operation[key])
-        .map(key => {
-          map.push(this.symbol[key]);
-        });
-
-      return map;
+      return Object.keys(this.operation).filter(
+        key => this.operation[key].active
+      );
     }
   },
   created() {
