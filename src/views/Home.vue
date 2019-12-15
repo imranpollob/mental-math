@@ -2,11 +2,11 @@
   <div class="home">
     <div>
       Limit of first argument
-      <input type="text" v-model="firstLimit"/>
+      <input type="text" v-model="firstLimit" />
     </div>
     <div>
       Limit of second argument
-      <input type="text" v-model="secondLimit"/>
+      <input type="text" v-model="secondLimit" />
     </div>
 
     Operations:
@@ -58,17 +58,19 @@
 </template>
 
 <script>
+const r = require("random-int");
+
 export default {
   name: "home",
   data() {
     return {
-      first: 1,
-      second: 2,
-      operator: "+",
+      first: null,
+      second: null,
+      operator: null,
       answer: null,
       result: false,
       feedback: "",
-      firstLimit: 12,
+      firstLimit: 10,
       secondLimit: 10,
       operation: {
         addition: true,
@@ -82,16 +84,8 @@ export default {
         multiplication: "x",
         division: "÷"
       },
-      log: [
-        {
-          first: 4,
-          second: 5,
-          operator: "+",
-          answer: 9,
-          result: true,
-          time: 3
-        }
-      ]
+      log: [],
+      questions: []
     };
   },
   methods: {
@@ -121,8 +115,6 @@ export default {
       }
 
       if (this.result) {
-        this.first += 1;
-        this.second += 1;
         this.answer = null;
         this.feedback = "Correct";
 
@@ -136,12 +128,31 @@ export default {
     typing() {
       this.feedback = "";
     },
+    generateQuestion() {
+      return {
+        possibleFirst: r(parseInt(this.firstLimit)),
+        possibleSecond: r(parseInt(this.secondLimit)),
+        possibleOperator: this.operatorMap[r(this.operatorMap.length - 1)]
+      };
+    },
     newQuestion() {
-      this.first = Math.floor(Math.random() * Math.floor(this.firstLimit));
-      this.second = Math.floor(Math.random() * Math.floor(this.secondLimit));
-      this.operator = this.operatorMap[
-        Math.floor(Math.random() * Math.floor(this.operatorMap.length))
-      ];
+      let {
+        possibleFirst,
+        possibleSecond,
+        possibleOperator
+      } = this.generateQuestion();
+
+      let match = `${possibleFirst}${possibleOperator}${possibleSecond}`;
+
+      if (this.questions.includes(match)) {
+        this.newQuestion();
+      } else {
+        this.questions.push(match);
+
+        this.first = possibleFirst;
+        this.second = possibleSecond;
+        this.operator = possibleOperator;
+      }
     },
     saveToLog() {
       this.log.push({
@@ -166,6 +177,9 @@ export default {
 
       return map;
     }
+  },
+  created() {
+    this.newQuestion();
   }
 };
 </script>
