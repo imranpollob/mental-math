@@ -60,6 +60,8 @@
       <input type="number" class="answer" v-model="answer" @keydown="typing" />
       <div class="feedback">{{ feedback }}</div>
     </form>
+
+    Time: {{ individualTime }}
   </div>
 </template>
 
@@ -76,6 +78,9 @@ export default {
       answer: null,
       result: false,
       feedback: "",
+      quizTime: 0,
+      individualTime: 0,
+      timer: null,
       operation: {
         addition: {
           symbol: "+",
@@ -92,14 +97,14 @@ export default {
         multiplication: {
           symbol: "x",
           active: true,
-          firstLimit: 100,
-          secondLimit: 100
+          firstLimit: 12,
+          secondLimit: 10
         },
         division: {
           symbol: "÷",
           active: true,
-          firstLimit: 100,
-          secondLimit: 100
+          firstLimit: 12,
+          secondLimit: 10
         }
       },
       log: [],
@@ -135,8 +140,8 @@ export default {
       if (this.result) {
         this.answer = null;
         this.feedback = "Correct";
-
         this.saveToLog();
+        this.stopTimer();
         this.newQuestion();
       } else {
         this.saveToLog();
@@ -162,6 +167,8 @@ export default {
       };
     },
     newQuestion() {
+      this.startTimer();
+
       let {
         possibleFirst,
         possibleSecond,
@@ -191,8 +198,15 @@ export default {
         operator: this.operator,
         answer: this.answer,
         result: this.result,
-        time: 3
+        time: this.individualTime
       });
+    },
+    startTimer() {
+      this.timer = setInterval(() => (this.individualTime += 1), 1000);
+    },
+    stopTimer() {
+      clearInterval(this.timer);
+      this.individualTime = 0;
     }
   },
   computed: {
