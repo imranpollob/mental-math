@@ -70,7 +70,7 @@ export default {
       answer: null,
       result: false,
       feedback: "",
-      firstLimit: 10,
+      firstLimit: 12,
       secondLimit: 10,
       operation: {
         addition: true,
@@ -130,8 +130,8 @@ export default {
     },
     generateQuestion() {
       return {
-        possibleFirst: r(parseInt(this.firstLimit)),
-        possibleSecond: r(parseInt(this.secondLimit)),
+        possibleFirst: r(1, parseInt(this.firstLimit)),
+        possibleSecond: r(1, parseInt(this.secondLimit)),
         possibleOperator: this.operatorMap[r(this.operatorMap.length - 1)]
       };
     },
@@ -149,7 +149,11 @@ export default {
       } else {
         this.questions.push(match);
 
-        this.first = possibleFirst;
+        if (possibleOperator === "÷") {
+          this.first = possibleFirst * possibleSecond;
+        } else {
+          this.first = possibleFirst;
+        }
         this.second = possibleSecond;
         this.operator = possibleOperator;
       }
