@@ -80,6 +80,23 @@
         <button @click="stopQuiz">Stop</button>
       </dir>
     </div>
+
+    <div v-if="logs.length && !quizRunning">
+      <table border="1">
+        <tr>
+          <th>Question</th>
+          <th>Your Answer</th>
+          <th>Correct Answer</th>
+          <th>Time Taken</th>
+        </tr>
+        <tr v-for="(log, index) of logs" :key="index">
+          <td>{{ log.first }} {{ log.operator }} {{ log.second }}</td>
+          <td>{{ log.answer }}</td>
+          <td>{{ log.result }}</td>
+          <td>{{ log.time }}s</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -126,7 +143,16 @@ export default {
           secondLimit: 10
         }
       },
-      log: [],
+      logs: [
+        {
+          first: 2,
+          second: 3,
+          operator: "x",
+          answer: 6,
+          result: 5,
+          time: 1
+        }
+      ],
       questions: []
     };
   },
@@ -141,22 +167,35 @@ export default {
     },
     check() {
       this.result = false;
+      let correct = false;
 
       switch (this.operator) {
         case "+":
-          this.result = this.first + this.second == this.answer;
+          this.result = this.first + this.second
+          if (this.result === parseInt(this.answer)) {
+            correct = true;
+          }
           break;
 
         case "-":
-          this.result = this.first - this.second == this.answer;
+          this.result = this.first - this.second
+          if (this.result === parseInt(this.answer)) {
+            correct = true;
+          }
           break;
 
         case "X":
-          this.result = this.first * this.second == this.answer;
+          this.result = this.first * this.second
+          if (this.result === parseInt(this.answer)) {
+            correct = true;
+          }
           break;
 
         case "÷":
-          this.result = this.first / this.second == this.answer;
+          this.result = this.first / this.second
+          if (this.result === parseInt(this.answer)) {
+            correct = true;
+          }
           break;
 
         default:
@@ -164,11 +203,11 @@ export default {
           break;
       }
 
-      if (this.result) {
-        this.answer = null;
+      if (correct) {
         this.feedback = "Correct";
         this.saveToLog();
         this.stopTimer();
+        this.answer = null;
         this.newQuestion();
       } else {
         this.saveToLog();
@@ -219,14 +258,16 @@ export default {
       }
     },
     saveToLog() {
-      this.log.push({
-        first: this.first,
-        second: this.second,
-        operator: this.operator,
-        answer: this.answer,
-        result: this.result,
-        time: this.individualTime
-      });
+      if (this.answer) {
+        this.logs.push({
+          first: this.first,
+          second: this.second,
+          operator: this.operator,
+          answer: this.answer,
+          result: this.result,
+          time: this.individualTime
+        });
+      }
     },
     startTimer() {
       this.timer = setInterval(() => (this.individualTime += 1), 1000);
