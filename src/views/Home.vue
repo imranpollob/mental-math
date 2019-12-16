@@ -60,6 +60,7 @@
     </div>
 
     <div v-else>
+      <div>{{quizTime}}</div>
       <form @submit.prevent="check">
         <span class="first-arg">{{ first }}</span>
         <span class="operator">{{ operator }}</span>
@@ -115,7 +116,7 @@ export default {
       feedback: "",
       quizTime: 2,
       individualTime: 0,
-      timer: null,
+      individualTimer: null,
       quizRunning: false,
       operation: {
         addition: {
@@ -163,7 +164,7 @@ export default {
     },
     stopQuiz() {
       this.quizRunning = false;
-      this.stopTimer();
+      this.stopIndividualTimer();
     },
     check() {
       this.result = false;
@@ -184,7 +185,7 @@ export default {
           }
           break;
 
-        case "X":
+        case "x":
           this.result = this.first * this.second
           if (this.result === parseInt(this.answer)) {
             correct = true;
@@ -206,7 +207,7 @@ export default {
       if (correct) {
         this.feedback = "Correct";
         this.saveToLog();
-        this.stopTimer();
+        this.stopIndividualTimer();
         this.answer = null;
         this.newQuestion();
       } else {
@@ -233,7 +234,7 @@ export default {
       };
     },
     newQuestion() {
-      this.startTimer();
+      this.startIndividualTimer();
 
       let {
         possibleFirst,
@@ -269,11 +270,11 @@ export default {
         });
       }
     },
-    startTimer() {
-      this.timer = setInterval(() => (this.individualTime += 1), 1000);
+    startIndividualTimer() {
+      this.individualTimer = setInterval(() => (this.individualTime += 1), 1000);
     },
-    stopTimer() {
-      clearInterval(this.timer);
+    stopIndividualTimer() {
+      clearInterval(this.individualTimer);
       this.individualTime = 0;
     }
   },
