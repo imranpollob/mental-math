@@ -60,7 +60,7 @@
     </div>
 
     <div v-else>
-      <div>{{quizTime}}</div>
+      <div>{{ quizTime }}</div>
       <form @submit.prevent="check">
         <span class="first-arg">{{ first }}</span>
         <span class="operator">{{ operator }}</span>
@@ -115,6 +115,7 @@ export default {
       result: false,
       feedback: "",
       quizTime: 2,
+      quizTimer: null,
       individualTime: 0,
       individualTimer: null,
       quizRunning: false,
@@ -159,10 +160,12 @@ export default {
   },
   methods: {
     startQuiz() {
+      this.startQuizTimer();
       this.quizRunning = true;
       this.newQuestion();
     },
     stopQuiz() {
+      this.stopQuizTimer();
       this.quizRunning = false;
       this.stopIndividualTimer();
     },
@@ -172,28 +175,28 @@ export default {
 
       switch (this.operator) {
         case "+":
-          this.result = this.first + this.second
+          this.result = this.first + this.second;
           if (this.result === parseInt(this.answer)) {
             correct = true;
           }
           break;
 
         case "-":
-          this.result = this.first - this.second
+          this.result = this.first - this.second;
           if (this.result === parseInt(this.answer)) {
             correct = true;
           }
           break;
 
         case "x":
-          this.result = this.first * this.second
+          this.result = this.first * this.second;
           if (this.result === parseInt(this.answer)) {
             correct = true;
           }
           break;
 
         case "÷":
-          this.result = this.first / this.second
+          this.result = this.first / this.second;
           if (this.result === parseInt(this.answer)) {
             correct = true;
           }
@@ -271,11 +274,21 @@ export default {
       }
     },
     startIndividualTimer() {
-      this.individualTimer = setInterval(() => (this.individualTime += 1), 1000);
+      this.individualTimer = setInterval(
+        () => (this.individualTime += 1),
+        1000
+      );
     },
     stopIndividualTimer() {
       clearInterval(this.individualTimer);
       this.individualTime = 0;
+    },
+    startQuizTimer() {
+      this.quizTimer = setInterval(() => (this.quizTime -= 1), 1000);
+    },
+    stopQuizTimer() {
+      clearInterval(this.quizTimer);
+      this.quizTime = 2;
     }
   },
   computed: {
@@ -283,6 +296,13 @@ export default {
       return Object.keys(this.operation).filter(
         key => this.operation[key].active
       );
+    }
+  },
+  watch: {
+    quizTime(value) {
+      if (parseInt(value) === 0) {
+        this.stopQuiz();
+      }
     }
   }
 };
