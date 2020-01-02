@@ -1,24 +1,25 @@
 <template>
   <div class="home">
-    <div>
-      <h1>Improve Your Mental Math Power</h1>
-    </div>
     <div v-if="!quizRunning" class="quiz-settings">
+      <h1>Improve Your Mental Math Power</h1>
       <h3>Quiz settings</h3>
+      <div class="pure-g quiz-settings__title">
+        <div class="pure-u-1-3">Operation</div>
+        <div class="pure-u-1-3">Highest Limit</div>
+        <div class="pure-u-1-3">Preview</div>
+      </div>
       <div class="pure-g">
         <div class="pure-u-1-3 quiz-operator">
           <input type="checkbox" id="addition" value="addition" v-model="operation.addition.active" />
           <label for="addition">Addition</label>
         </div>
         <div class="pure-u-1-3">
-          <p>Highest limit</p>
           <div class="limit">
             <input type="number" v-model="operation.addition.firstLimit" />
             <input type="number" v-model="operation.addition.secondLimit" />
           </div>
         </div>
         <div class="pure-u-1-3">
-          <p>Preview</p>
           <div class="preview">
             <span class="preview__limit">{{operation.addition.firstLimit}}</span>
             <span class="preview__operator">+</span>
@@ -42,14 +43,12 @@
           <label for="subtraction">Subtraction</label>
         </div>
         <div class="pure-u-1-3">
-          <p>Highest limit</p>
           <div class="limit">
             <input type="number" v-model="operation.subtraction.firstLimit" />
             <input type="number" v-model="operation.subtraction.secondLimit" />
           </div>
         </div>
         <div class="pure-u-1-3">
-          <p>Preview</p>
           <div class="preview">
             <span class="preview__limit">{{operation.subtraction.firstLimit}}</span>
             <span class="preview__operator">-</span>
@@ -73,14 +72,12 @@
           <label for="multiplication">Multiplication</label>
         </div>
         <div class="pure-u-1-3">
-          <p>Highest limit</p>
           <div class="limit">
             <input type="number" v-model="operation.multiplication.firstLimit" />
             <input type="number" v-model="operation.multiplication.secondLimit" />
           </div>
         </div>
         <div class="pure-u-1-3">
-          <p>Preview</p>
           <div class="preview">
             <span class="preview__limit">{{operation.multiplication.firstLimit}}</span>
             <span class="preview__operator">x</span>
@@ -99,14 +96,12 @@
           <label for="division">division</label>
         </div>
         <div class="pure-u-1-3">
-          <p>Highest limit</p>
           <div class="limit">
             <input type="number" v-model="operation.division.firstLimit" />
             <input type="number" v-model="operation.division.secondLimit" />
           </div>
         </div>
         <div class="pure-u-1-3">
-          <p>Preview</p>
           <div class="preview">
             <span class="preview__limit">{{operation.division.firstLimit}}</span>
             <span class="preview__operator">÷</span>
@@ -184,7 +179,7 @@ export default {
       answer: null,
       result: false,
       feedback: "",
-      quizTime: 120,
+      quizTime: 60,
       quizTimer: null,
       individualTime: 0,
       individualTimer: null,
@@ -215,16 +210,7 @@ export default {
           secondLimit: 10
         }
       },
-      logs: [
-        {
-          first: 2,
-          second: 3,
-          operator: "x",
-          answer: 6,
-          result: 5,
-          time: 1
-        }
-      ],
+      logs: [],
       questions: []
     };
   },
@@ -358,7 +344,7 @@ export default {
     },
     stopQuizTimer() {
       clearInterval(this.quizTimer);
-      this.quizTime = 2;
+      this.quizTime = 60;
     }
   },
   computed: {
@@ -386,7 +372,9 @@ export default {
 .feedback {
   font-size: 24px;
 }
-
+.quiz-settings__title > div {
+  font-size: 18px;
+}
 .quiz-operator {
   display: flex;
   align-items: center;
