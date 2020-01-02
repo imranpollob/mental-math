@@ -31,45 +31,108 @@
         </div>
       </div>
 
-      <div>
-        <input
-          type="checkbox"
-          id="subtraction"
-          value="subtraction"
-          v-model="operation.subtraction.active"
-        />
-        <label for="subtraction">Subtraction</label>
-        <input type="text" v-model="operation.subtraction.firstLimit" />
-        <input type="text" v-model="operation.subtraction.secondLimit" />
+      <div class="pure-g">
+        <div class="pure-u-1-3 quiz-operator">
+          <input
+            type="checkbox"
+            id="subtraction"
+            value="subtraction"
+            v-model="operation.subtraction.active"
+          />
+          <label for="subtraction">Subtraction</label>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Highest limit</p>
+          <div class="limit">
+            <input type="number" v-model="operation.subtraction.firstLimit" />
+            <input type="number" v-model="operation.subtraction.secondLimit" />
+          </div>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Preview</p>
+          <div class="preview">
+            <span class="preview__limit">{{operation.subtraction.firstLimit}}</span>
+            <span class="preview__operator">-</span>
+            <span class="preview__limit">{{operation.subtraction.secondLimit}}</span>
+            <span class="preview__operator">=</span>
+            <span
+              class="preview__operator"
+            >{{ parseInt(operation.subtraction.firstLimit) - parseInt(operation.subtraction.secondLimit) }}</span>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <input
-          type="checkbox"
-          id="multiplication"
-          value="multiplication"
-          v-model="operation.multiplication.active"
-        />
-        <label for="multiplication">Multiplication</label>
-        <input type="text" v-model="operation.multiplication.firstLimit" />
-        <input type="text" v-model="operation.multiplication.secondLimit" />
+      <div class="pure-g">
+        <div class="pure-u-1-3 quiz-operator">
+          <input
+            type="checkbox"
+            id="multiplication"
+            value="multiplication"
+            v-model="operation.multiplication.active"
+          />
+          <label for="multiplication">Multiplication</label>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Highest limit</p>
+          <div class="limit">
+            <input type="number" v-model="operation.multiplication.firstLimit" />
+            <input type="number" v-model="operation.multiplication.secondLimit" />
+          </div>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Preview</p>
+          <div class="preview">
+            <span class="preview__limit">{{operation.multiplication.firstLimit}}</span>
+            <span class="preview__operator">x</span>
+            <span class="preview__limit">{{operation.multiplication.secondLimit}}</span>
+            <span class="preview__operator">=</span>
+            <span
+              class="preview__operator"
+            >{{ parseInt(operation.multiplication.firstLimit) * parseInt(operation.multiplication.secondLimit) }}</span>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <input type="checkbox" id="division" value="division" v-model="operation.division.active" />
-        <label for="division">Division</label>
-        <input type="text" v-model="operation.division.firstLimit" />
-        <input type="text" v-model="operation.division.secondLimit" />
+      <div class="pure-g">
+        <div class="pure-u-1-3 quiz-operator">
+          <input type="checkbox" id="division" value="division" v-model="operation.division.active" />
+          <label for="division">division</label>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Highest limit</p>
+          <div class="limit">
+            <input type="number" v-model="operation.division.firstLimit" />
+            <input type="number" v-model="operation.division.secondLimit" />
+          </div>
+        </div>
+        <div class="pure-u-1-3">
+          <p>Preview</p>
+          <div class="preview">
+            <span class="preview__limit">{{operation.division.firstLimit}}</span>
+            <span class="preview__operator">÷</span>
+            <span class="preview__limit">{{operation.division.secondLimit}}</span>
+            <span class="preview__operator">=</span>
+            <span
+              class="preview__operator"
+            >{{ parseInt(operation.division.firstLimit) / parseInt(operation.division.secondLimit) }}</span>
+          </div>
+        </div>
       </div>
 
-      <div>
-        Total Time
-        <input type="text" v-model="quizTime" /> minute
+      <hr />
+
+      <div class="pure-g">
+        <div class="pure-u-1-3">
+          <p>Total Time</p>
+        </div>
+        <div class="pure-u-2-3">
+          <input type="text" v-model="quizTime" /> Seconds
+        </div>
       </div>
 
-      <dir>
-        <button @click="startQuiz">Start</button>
-      </dir>
+      <div class="quiz-main-button">
+        <button @click="startQuiz" class="main-button">Start</button>
+      </div>
     </div>
 
     <div v-else class="quiz-body">
@@ -121,7 +184,7 @@ export default {
       answer: null,
       result: false,
       feedback: "",
-      quizTime: 2,
+      quizTime: 120,
       quizTimer: null,
       individualTime: 0,
       individualTimer: null,
@@ -351,5 +414,17 @@ export default {
 
 .limit > input:last-child {
   margin-left: 10px;
+}
+
+.quiz-main-button {
+  text-align: center;
+  margin: 50px;
+}
+
+.main-button {
+  font-size: 28px;
+  padding: 5px 15px;
+  border: 3px solid orange;
+  border-radius: 30px;
 }
 </style>
