@@ -121,7 +121,7 @@
           <p>Total Time</p>
         </div>
         <div class="pure-u-2-3">
-          <input type="text" v-model="quizTime" /> Seconds
+          <input type="number" v-model="quizTime" /> Seconds
         </div>
       </div>
 
@@ -131,7 +131,7 @@
     </div>
 
     <div v-else class="quiz-body">
-      <div>{{ quizTime }}</div>
+      <div>{{ currentQuizTime }}</div>
       <form @submit.prevent="check">
         <span class="first-arg">{{ first }}</span>
         <span class="operator">{{ operator }}</span>
@@ -180,6 +180,7 @@ export default {
       result: false,
       feedback: "",
       quizTime: 60,
+      currentQuizTime: 60,
       quizTimer: null,
       individualTime: 0,
       individualTimer: null,
@@ -216,13 +217,13 @@ export default {
   },
   methods: {
     startQuiz() {
-      this.feedback = '';
       this.startQuizTimer();
       this.quizRunning = true;
       this.newQuestion();
     },
     stopQuiz() {
       this.stopQuizTimer();
+      this.feedback = '';
       this.quizRunning = false;
       this.stopIndividualTimer();
     },
@@ -341,11 +342,11 @@ export default {
       this.individualTime = 0;
     },
     startQuizTimer() {
-      this.quizTimer = setInterval(() => (this.quizTime -= 1), 1000);
+      this.currentQuizTime = this.quizTime;
+      this.quizTimer = setInterval(() => (this.currentQuizTime -= 1), 1000);
     },
     stopQuizTimer() {
       clearInterval(this.quizTimer);
-      this.quizTime = 60;
     }
   },
   computed: {
@@ -356,7 +357,7 @@ export default {
     }
   },
   watch: {
-    quizTime(value) {
+    currentQuizTime(value) {
       if (parseInt(value) === 0) {
         this.stopQuiz();
       }
