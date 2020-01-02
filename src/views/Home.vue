@@ -216,6 +216,7 @@ export default {
   },
   methods: {
     startQuiz() {
+      this.feedback = '';
       this.startQuizTimer();
       this.quizRunning = true;
       this.newQuestion();
