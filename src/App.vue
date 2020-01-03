@@ -6,6 +6,8 @@
 
 <style>
 @import "https://unpkg.com/purecss@1.0.1/build/pure-min.css";
+@import url('https://fonts.googleapis.com/css?family=Cinzel|PT+Serif&display=swap');
+
 h1 {
   font-size: 40px;
 }
@@ -33,8 +35,13 @@ p {
   font-size: 16px;
 }
 
-input {
+/* input {
   font-size: 18px;
   padding: 5px;
+} */
+
+body {
+  background: #223;
+  font-family: 'PT Serif', serif;
 }
 </style>

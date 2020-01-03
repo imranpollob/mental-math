@@ -1,5 +1,16 @@
 <template>
   <div class="home">
+    <div v-if="!quizRunning" class="title-container">
+      <h1 class="sup-title">
+        <span>ULTIMATE</span>
+      </h1>
+      <h1 class="title">
+        <span>MentaL MatH</span>
+      </h1>
+      <h1 class="sub-title">
+        <span>TRAINER</span>
+      </h1>
+    </div>
     <div v-if="!quizRunning" class="quiz-settings">
       <h1>Improve Your Mental Math Power</h1>
       <h3>Quiz settings</h3>
@@ -223,7 +234,7 @@ export default {
     },
     stopQuiz() {
       this.stopQuizTimer();
-      this.feedback = '';
+      this.feedback = "";
       this.quizRunning = false;
       this.stopIndividualTimer();
     },
@@ -417,4 +428,39 @@ export default {
   border: 3px solid orange;
   border-radius: 30px;
 }
+
+.sup-title,
+.title,
+.sub-title {
+  margin: 0;
+  padding: 0;
+  font-family: "Cinzel", serif;
+  text-align: center;
+}
+
+.sup-title {
+  font-size: 16px;
+  letter-spacing: 3px;
+  margin-bottom: -20px;
+  color: #99a;
+}
+
+.title {
+  font-size: 80px;
+  letter-spacing: 3px;
+  color: #b72;
+  z-index: -1;
+}
+
+.sub-title {
+  font-size: 25px;
+  letter-spacing: 3px;
+  margin-top: -30px;
+  color: #db6;
+}
+
+.quiz-settings{
+  background: url('../assets/section-bg.png');
+}
+
 </style>
