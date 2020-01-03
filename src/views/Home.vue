@@ -459,7 +459,7 @@ export default {
   color: #db6;
 }
 
-.quiz-settings{
+.home{
   background: url('../assets/section-bg.png');
 }
 
