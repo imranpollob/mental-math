@@ -1,26 +1,16 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Quiz from '../views/Quiz.vue'
-
-Vue.use(VueRouter)
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
-  },
-  {
-    path: '/quiz',
-    name: 'quiz',
-    component: Quiz
+    component: HomeView
   }
 ]
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
   routes
 })
 
