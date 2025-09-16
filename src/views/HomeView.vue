@@ -1,90 +1,12 @@
 <template>
   <div class="page">
-    <header class="hero" v-if="!quizRunning">
+    <header class="hero" v-if="showSettingsSection && !quizRunning">
       <h1 class="hero__eyebrow">Ultimate</h1>
       <h1 class="hero__title">Mental Math Trainer</h1>
       <h2 class="hero__subtitle">Build sharper number sense with adaptive drills.</h2>
     </header>
 
-    <section v-if="!quizRunning" class="settings">
-      <div class="settings__row">
-        <label class="settings__label" for="difficulty">Difficulty</label>
-        <select id="difficulty" v-model="selectedDifficulty" class="settings__select">
-          <option v-for="option in difficultyOptions" :key="option.id" :value="option.id">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-      <p class="settings__description">{{ selectedDifficultyDescription }}</p>
-
-      <div class="settings__row">
-        <label class="settings__label" for="quiz-time">Quiz length (seconds)</label>
-        <input
-          id="quiz-time"
-          type="number"
-          min="30"
-          step="15"
-          v-model.number="quizTime"
-          class="settings__input"
-        />
-      </div>
-
-      <p class="settings__hint">Mix and match the skills you want to drill and choose number ranges below.</p>
-    </section>
-
-    <section v-if="!quizRunning" class="operations">
-      <h3 class="operations__title">Practice focus</h3>
-      <div class="operations__grid">
-        <article
-          v-for="([key, definition], index) in operationEntries"
-          :key="key"
-          class="operation-card"
-        >
-          <div class="operation-card__header">
-            <label>
-              <input type="checkbox" v-model="operations[key].active" />
-              <span class="operation-card__label">{{ definition.label }}</span>
-            </label>
-            <span class="operation-card__symbol">{{ definition.symbol }}</span>
-          </div>
-          <p class="operation-card__description">{{ definition.description }}</p>
-
-          <div
-            v-for="control in definition.rangeControls"
-            :key="`${key}-${control.key}`"
-            class="operation-card__control"
-          >
-            <label :for="`${key}-${control.key}`">{{ control.label }}</label>
-            <select
-              class="operation-card__select"
-              :id="`${key}-${control.key}`"
-              v-model="operations[key][control.key]"
-            >
-              <option
-                v-for="option in rangeOptionsByType(control.type)"
-                :key="option.id"
-                :value="option.id"
-              >
-                {{ option.label }}
-              </option>
-            </select>
-          </div>
-
-          <footer class="operation-card__footer">
-            <span class="operation-card__preview-label">Example</span>
-            <span class="operation-card__preview">{{ previewForOperation(key) }}</span>
-          </footer>
-        </article>
-      </div>
-
-      <p v-if="setupError" class="operations__error">{{ setupError }}</p>
-
-      <div class="operations__actions">
-        <button class="primary" @click="startQuiz">Start training</button>
-      </div>
-    </section>
-
-    <section v-else class="quiz">
+    <section v-if="quizRunning" class="quiz">
       <header class="quiz__header">
         <div class="quiz__timer">
           <span class="quiz__timer-label">Time left</span>
@@ -117,9 +39,69 @@
       <p v-if="feedback" class="quiz__feedback">{{ feedback }}</p>
     </section>
 
-    <section v-if="logs.length" class="results">
+    <section v-else-if="showSettingsSection" class="settings">
+      <div class="settings__group">
+        <div class="settings__row settings__row--general">
+          <label class="settings__label" for="difficulty">Difficulty</label>
+          <select id="difficulty" v-model="selectedDifficulty" class="settings__select">
+            <option v-for="option in difficultyOptions" :key="option.id" :value="option.id">
+              {{ option.label }}
+            </option>
+          </select>
+          <label class="settings__label" for="quiz-time">Quiz length (seconds)</label>
+          <input
+            id="quiz-time"
+            type="number"
+            min="30"
+            step="15"
+            v-model.number="quizTime"
+            class="settings__input"
+          />
+        </div>
+
+        <div
+          v-for="([key, definition]) in operationEntries"
+          :key="key"
+          class="settings__row settings__row--operation"
+        >
+          <label class="settings__operation-toggle">
+            <input type="checkbox" v-model="operations[key].active" />
+            <span>{{ definition.label }}</span>
+          </label>
+
+          <div
+            v-for="control in definition.rangeControls"
+            :key="`${key}-${control.key}`"
+            class="settings__operation-control"
+          >
+            <label :for="`${key}-${control.key}`">{{ control.label }}</label>
+            <select
+              class="settings__select"
+              :id="`${key}-${control.key}`"
+              v-model="operations[key][control.key]"
+            >
+              <option
+                v-for="option in rangeOptionsByType(control.type)"
+                :key="option.id"
+                :value="option.id"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <p v-if="setupError" class="settings__error">{{ setupError }}</p>
+
+      <div class="settings__actions">
+        <button class="primary" @click="startQuiz">Start training</button>
+      </div>
+    </section>
+
+    <section v-else class="results">
       <h3 class="results__title">Latest session</h3>
-      <table class="results__table">
+      <table v-if="logs.length" class="results__table">
         <thead>
           <tr>
             <th>#</th>
@@ -145,6 +127,12 @@
           </tr>
         </tbody>
       </table>
+      <p v-else class="results__placeholder">Try to attempt the questions.</p>
+
+      <div class="results__actions">
+        <button type="button" class="primary" @click="playAgain">Play again</button>
+        <button type="button" class="secondary" @click="changeSettings">Change settings</button>
+      </div>
     </section>
   </div>
 </template>
@@ -382,6 +370,7 @@ const selectedDifficulty = ref('easy')
 const quizTime = ref(difficultyPresets.easy.time)
 const currentQuizTime = ref(quizTime.value)
 const quizRunning = ref(false)
+const showSettingsSection = ref(true)
 const answer = ref('')
 const feedback = ref('')
 const setupError = ref('')
@@ -527,6 +516,7 @@ function startQuiz() {
   setupError.value = ''
   logs.value = []
   quizRunning.value = true
+  showSettingsSection.value = false
   feedback.value = ''
   answer.value = ''
   currentQuizTime.value = Math.round(quizTime.value)
@@ -539,8 +529,33 @@ function stopQuiz() {
   finishQuiz()
 }
 
+function playAgain() {
+  if (quizRunning.value) {
+    return
+  }
+  startQuiz()
+}
+
+function changeSettings() {
+  if (quizRunning.value) {
+    return
+  }
+  logs.value = []
+  feedback.value = ''
+  setupError.value = ''
+  answer.value = ''
+  individualTime.value = 0
+  const baseTime = typeof quizTime.value === 'number' && Number.isFinite(quizTime.value)
+    ? quizTime.value
+    : 0
+  currentQuizTime.value = Math.max(0, Math.round(baseTime))
+  resetCurrentQuestion()
+  showSettingsSection.value = true
+}
+
 function finishQuiz() {
   quizRunning.value = false
+  showSettingsSection.value = false
   clearInterval(quizTimer.value)
   clearInterval(individualTimer.value)
   quizTimer.value = null
@@ -640,6 +655,15 @@ function focusAnswerField() {
   })
 }
 
+function resetCurrentQuestion() {
+  currentQuestion.key = ''
+  currentQuestion.prompt = ''
+  currentQuestion.operator = ''
+  currentQuestion.first = null
+  currentQuestion.second = null
+  currentQuestion.answer = null
+}
+
 function formatTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
@@ -735,15 +759,46 @@ onBeforeUnmount(() => {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
 
-.settings__row {
+.settings__group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.settings__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 0;
 }
 
 .settings__label {
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 0;
+  min-width: 100px;
+}
+
+.settings__operation-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  min-width: 160px;
+}
+
+.settings__operation-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.settings__operation-control label {
+  font-size: 14px;
+  color: #d3d8f5;
 }
 
 .settings__select,
@@ -753,11 +808,14 @@ onBeforeUnmount(() => {
   border: none;
   background: rgba(255, 255, 255, 0.1);
   color: inherit;
+  width: auto;
+  min-width: 120px;
+  max-width: 220px;
+  flex: 0 0 auto;
 }
 
 .settings__select:focus,
 .settings__input:focus,
-.operation-card__select:focus,
 .quiz__answer:focus {
   outline: 2px solid #ffb347;
 }
@@ -773,99 +831,13 @@ onBeforeUnmount(() => {
   color: #c3c9e6;
 }
 
-.operations {
-  background: rgba(16, 16, 28, 0.7);
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-}
-
-.operations__title {
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.operations__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-.operation-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 220px;
-}
-
-.operation-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-.operation-card__label {
-  margin-left: 6px;
-}
-
-.operation-card__symbol {
-  font-size: 24px;
-  opacity: 0.8;
-}
-
-.operation-card__description {
-  font-size: 14px;
-  color: #c4c8e4;
-  margin: 0 0 10px;
-}
-
-.operation-card__control {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 8px;
-}
-
-.operation-card__select {
-  margin-top: 4px;
-  padding: 8px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: inherit;
-}
-
-.operation-card__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.operation-card__preview-label {
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #a3a7c6;
-}
-
-.operation-card__preview {
-  font-weight: 600;
-}
-
-.operations__actions {
+.settings__actions {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
-.operations__error {
-  margin-top: 16px;
+.settings__error {
+  margin: 8px 0 0;
   color: #ff8a80;
   text-align: center;
 }
@@ -997,6 +969,20 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.results__placeholder {
+  margin: 24px 0;
+  text-align: center;
+  color: #c4c8e4;
+}
+
+.results__actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .result--correct {
   color: #7cff8b;
 }
@@ -1008,10 +994,6 @@ onBeforeUnmount(() => {
 @media (max-width: 720px) {
   .page {
     padding: 24px 16px 48px;
-  }
-
-  .operations__grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
   .quiz__prompt {
