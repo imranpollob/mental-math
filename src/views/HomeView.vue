@@ -42,21 +42,26 @@
     <section v-else-if="showSettingsSection" class="settings">
       <div class="settings__group">
         <div class="settings__row settings__row--general">
-          <label class="settings__label" for="difficulty">Difficulty</label>
-          <select id="difficulty" v-model="selectedDifficulty" class="settings__select">
-            <option v-for="option in difficultyOptions" :key="option.id" :value="option.id">
-              {{ option.label }}
-            </option>
-          </select>
-          <label class="settings__label" for="quiz-time">Quiz length (seconds)</label>
-          <input
-            id="quiz-time"
-            type="number"
-            min="30"
-            step="15"
-            v-model.number="quizTime"
-            class="settings__input"
-          />
+          <div class="settings__field">
+            <label class="settings__label" for="difficulty">Difficulty</label>
+            <select id="difficulty" v-model="selectedDifficulty" class="settings__select">
+              <option v-for="option in difficultyOptions" :key="option.id" :value="option.id">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="settings__field">
+            <label class="settings__label" for="quiz-time">Quiz length (seconds)</label>
+            <input
+              id="quiz-time"
+              type="number"
+              min="30"
+              step="15"
+              v-model.number="quizTime"
+              class="settings__input"
+            />
+          </div>
         </div>
 
         <div
@@ -69,25 +74,27 @@
             <span>{{ definition.label }}</span>
           </label>
 
-          <div
-            v-for="control in definition.rangeControls"
-            :key="`${key}-${control.key}`"
-            class="settings__operation-control"
-          >
-            <label :for="`${key}-${control.key}`">{{ control.label }}</label>
-            <select
-              class="settings__select"
-              :id="`${key}-${control.key}`"
-              v-model="operations[key][control.key]"
+          <div class="settings__operation-controls">
+            <div
+              v-for="control in definition.rangeControls"
+              :key="`${key}-${control.key}`"
+              class="settings__operation-control"
             >
-              <option
-                v-for="option in rangeOptionsByType(control.type)"
-                :key="option.id"
-                :value="option.id"
+              <label :for="`${key}-${control.key}`">{{ control.label }}</label>
+              <select
+                class="settings__select"
+                :id="`${key}-${control.key}`"
+                v-model="operations[key][control.key]"
               >
-                {{ option.label }}
-              </option>
-            </select>
+                <option
+                  v-for="option in rangeOptionsByType(control.type)"
+                  :key="option.id"
+                  :value="option.id"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -759,46 +766,68 @@ onBeforeUnmount(() => {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
 
+
 .settings__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings__row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.settings__row--general {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.settings__row--operation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.settings__field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.settings__row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 8px 0;
-}
-
 .settings__label {
   font-weight: 600;
-  margin-bottom: 0;
-  min-width: 100px;
 }
 
 .settings__operation-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 600;
-  min-width: 160px;
+}
+
+.settings__operation-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
 }
 
 .settings__operation-control {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
-  white-space: nowrap;
+  width: 100%;
 }
 
 .settings__operation-control label {
-  font-size: 14px;
-  color: #d3d8f5;
+  font-size: 16px;
+  color: #f7f5f0;
 }
 
 .settings__select,
@@ -808,10 +837,14 @@ onBeforeUnmount(() => {
   border: none;
   background: rgba(255, 255, 255, 0.1);
   color: inherit;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  flex: 1 1 auto;
+}
+
+.settings__input {
   width: auto;
-  min-width: 120px;
-  max-width: 220px;
-  flex: 0 0 auto;
 }
 
 .settings__select:focus,
@@ -840,6 +873,52 @@ onBeforeUnmount(() => {
   margin: 8px 0 0;
   color: #ff8a80;
   text-align: center;
+}
+
+@media (min-width: 1000px) {
+  .settings__row {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .settings__row--general {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+
+  .settings__row--operation {
+    grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(160px, 2fr));
+    align-items: center;
+    column-gap: 24px;
+    row-gap: 16px;
+  }
+
+  .settings__field {
+    max-width: 280px;
+  }
+
+  .settings__operation-toggle {
+    width: auto;
+    min-width: 180px;
+  }
+
+  .settings__operation-controls {
+    display: contents;
+  }
+
+  .settings__operation-control {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .settings__select,
+  .settings__input {
+    width: auto;
+    min-width: 140px;
+    max-width: 220px;
+    flex: 0 1 auto;
+  }
 }
 
 .primary,
